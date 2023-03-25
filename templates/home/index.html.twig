@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}AwShop - E-commerce{% endblock %}
+
+{% block body %}
+    {{ include("_partials/_title_section.html.twig", { 'name': 'AwShop - E-commerce' }) }}
+    {# Message si l'activation du compte a bien fonctionnée #}
+    {% for flash in app.flashes('token_message_success') %}
+    	<div class="alert alert-success">{{ flash }}</div>
+	{% endfor %}
+    {# Message si utilisateur a déjà activé son compte#}
+    {% for flash in app.flashes('resend_verif_warning') %}
+    	<div class="alert alert-warning">{{ flash }}</div>
+	{% endfor %}
+
+    <div class="container">
+        
+    </div>
+    
+{% endblock %}
