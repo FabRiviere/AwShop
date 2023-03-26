@@ -12,6 +12,22 @@
 	{% for flash in app.flashes('resend_verif_error') %}
     	<div class="alert alert-danger">{{ flash }}</div>
 	{% endfor %}
+	{# Message erreur pour reset password request #}
+	{% for flash in app.flashes('forget_message_error') %}
+    	<div class="alert alert-danger">{{ flash }}</div>
+	{% endfor %}
+	{# Message de succès pour reset password request #}
+	{% for flash in app.flashes('forget_message_success') %}
+    	<div class="alert alert-success">{{ flash }}</div>
+	{% endfor %}
+	{# Message erreur pour token invalide lors de la demande de réinitialisation du password #}
+	{% for flash in app.flashes('reset_passord_error') %}
+    	<div class="alert alert-danger">{{ flash }}</div>
+	{% endfor %}
+	{# Message de succès après reinitialisation du mot de passe #}
+	{% for flash in app.flashes('reset_passord_success') %}
+    	<div class="alert alert-success">{{ flash }}</div>
+	{% endfor %}
 
 	{{ include("_partials/_title_section.html.twig", { 'name': 'Log in' }) }}
 
@@ -31,13 +47,13 @@
                                         <a href="{{ path('app_logout') }}">Logout</a>
                                     </div>
                                 {% endif %}
-                                <div class="message-flash">
+                                {# <div class="message-flash">
                                     {% if error %}
                                         <div class="alert alert-danger">
                                             {{ error.messageKey|trans(error.messageData, 'security') }}
                                         </div>
                                     {% endif %}
-                                </div>
+                                </div> #}
 								<div class="form-group">
 									<label for="inputEmail">Email</label>
 		                            <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
@@ -56,7 +72,7 @@
 											</label>
 										</div>
 									</div>
-									<a href="#">Forgot password?</a>
+									<a href="{{ path('app_forgotten_password') }}">Forgot password?</a>
 								</div>
 								<div class="form-group">
 									<button type="submit" class="btn btn-fill-out btn-block" name="login">Log in</button>
@@ -87,17 +103,6 @@
 	</div>
 
 
-	<form method="post">
-		
-
-		
-
-		<h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-		
-		
-
-		
-
 		{#
 		        Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
 		        See https://symfony.com/doc/current/security/remember_me.html
@@ -108,9 +113,5 @@
 		            </label>
 		        </div>
 		    #}
-
-		<button class="btn btn-lg btn-primary" type="submit">
-			Sign in
-		</button>
-	</form>
+	
 {% endblock %}
