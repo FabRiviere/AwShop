@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Entity\Trait\CreatedAtTrait;
 use App\Repository\UsersRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -47,9 +49,13 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 100, nullable: true)]
     private $resetToken;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Addresses::class)]
+    private Collection $addresses;
+
     public function __construct()
     {
         $this->created_at = new \DateTimeImmutable();
+        $this->addresses = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -178,6 +184,36 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     public function setResetToken(string $resetToken): self
     {
         $this->resetToken = $resetToken;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Addresses>
+     */
+    public function getAddresses(): Collection
+    {
+        return $this->addresses;
+    }
+
+    public function addAddress(Addresses $address): self
+    {
+        if (!$this->addresses->contains($address)) {
+            $this->addresses->add($address);
+            $address->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAddress(Addresses $address): self
+    {
+        if ($this->addresses->removeElement($address)) {
+            // set the owning side to null (unless already changed)
+            if ($address->getUser() === $this) {
+                $address->setUser(null);
+            }
+        }
 
         return $this;
     }
