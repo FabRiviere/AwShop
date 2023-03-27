@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\CategoriesRepository;
+use App\Trait\SlugTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -11,6 +12,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: CategoriesRepository::class)]
 class Categories
 {
+    use SlugTrait;
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -35,10 +38,14 @@ class Categories
     #[ORM\ManyToMany(targetEntity: Products::class, mappedBy: 'category')]
     private Collection $products;
 
+    #[ORM\OneToMany(mappedBy: 'categories', targetEntity: Images::class)]
+    private Collection $images;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
         $this->products = new ArrayCollection();
+        $this->images = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -138,6 +145,36 @@ class Categories
     {
         if ($this->products->removeElement($product)) {
             $product->removeCategory($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Images>
+     */
+    public function getImages(): Collection
+    {
+        return $this->images;
+    }
+
+    public function addImage(Images $image): self
+    {
+        if (!$this->images->contains($image)) {
+            $this->images->add($image);
+            $image->setCategories($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImage(Images $image): self
+    {
+        if ($this->images->removeElement($image)) {
+            // set the owning side to null (unless already changed)
+            if ($image->getCategories() === $this) {
+                $image->setCategories(null);
+            }
         }
 
         return $this;

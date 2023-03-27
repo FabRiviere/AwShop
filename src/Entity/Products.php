@@ -2,7 +2,9 @@
 
 namespace App\Entity;
 
+use App\Entity\Trait\CreatedAtTrait;
 use App\Repository\ProductsRepository;
+use App\Trait\SlugTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -11,6 +13,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: ProductsRepository::class)]
 class Products
 {
+   use SlugTrait;
+   use CreatedAtTrait;
+   
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -49,9 +54,18 @@ class Products
     #[ORM\ManyToMany(targetEntity: Categories::class, inversedBy: 'products')]
     private Collection $category;
 
+    #[ORM\OneToMany(mappedBy: 'product', targetEntity: ReviewsProduct::class)]
+    private Collection $reviewsProducts;
+
+    #[ORM\OneToMany(mappedBy: 'products', targetEntity: Images::class)]
+    private Collection $images;
+
     public function __construct()
     {
         $this->category = new ArrayCollection();
+        $this->created_at = new \DateTimeImmutable();
+        $this->reviewsProducts = new ArrayCollection();
+        $this->images = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -199,6 +213,66 @@ class Products
     public function removeCategory(Categories $category): self
     {
         $this->category->removeElement($category);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ReviewsProduct>
+     */
+    public function getReviewsProducts(): Collection
+    {
+        return $this->reviewsProducts;
+    }
+
+    public function addReviewsProduct(ReviewsProduct $reviewsProduct): self
+    {
+        if (!$this->reviewsProducts->contains($reviewsProduct)) {
+            $this->reviewsProducts->add($reviewsProduct);
+            $reviewsProduct->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReviewsProduct(ReviewsProduct $reviewsProduct): self
+    {
+        if ($this->reviewsProducts->removeElement($reviewsProduct)) {
+            // set the owning side to null (unless already changed)
+            if ($reviewsProduct->getProduct() === $this) {
+                $reviewsProduct->setProduct(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Images>
+     */
+    public function getImages(): Collection
+    {
+        return $this->images;
+    }
+
+    public function addImage(Images $image): self
+    {
+        if (!$this->images->contains($image)) {
+            $this->images->add($image);
+            $image->setProducts($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImage(Images $image): self
+    {
+        if ($this->images->removeElement($image)) {
+            // set the owning side to null (unless already changed)
+            if ($image->getProducts() === $this) {
+                $image->setProducts(null);
+            }
+        }
 
         return $this;
     }

@@ -52,10 +52,26 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Addresses::class)]
     private Collection $addresses;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Carts::class)]
+    private Collection $carts;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: ReviewsProduct::class)]
+    private Collection $reviewsProducts;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Orders::class)]
+    private Collection $orders;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Images::class)]
+    private Collection $images;
+
     public function __construct()
     {
         $this->created_at = new \DateTimeImmutable();
         $this->addresses = new ArrayCollection();
+        $this->carts = new ArrayCollection();
+        $this->reviewsProducts = new ArrayCollection();
+        $this->orders = new ArrayCollection();
+        $this->images = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -212,6 +228,126 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($address->getUser() === $this) {
                 $address->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Carts>
+     */
+    public function getCarts(): Collection
+    {
+        return $this->carts;
+    }
+
+    public function addCart(Carts $cart): self
+    {
+        if (!$this->carts->contains($cart)) {
+            $this->carts->add($cart);
+            $cart->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCart(Carts $cart): self
+    {
+        if ($this->carts->removeElement($cart)) {
+            // set the owning side to null (unless already changed)
+            if ($cart->getUser() === $this) {
+                $cart->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ReviewsProduct>
+     */
+    public function getReviewsProducts(): Collection
+    {
+        return $this->reviewsProducts;
+    }
+
+    public function addReviewsProduct(ReviewsProduct $reviewsProduct): self
+    {
+        if (!$this->reviewsProducts->contains($reviewsProduct)) {
+            $this->reviewsProducts->add($reviewsProduct);
+            $reviewsProduct->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReviewsProduct(ReviewsProduct $reviewsProduct): self
+    {
+        if ($this->reviewsProducts->removeElement($reviewsProduct)) {
+            // set the owning side to null (unless already changed)
+            if ($reviewsProduct->getUser() === $this) {
+                $reviewsProduct->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Orders>
+     */
+    public function getOrders(): Collection
+    {
+        return $this->orders;
+    }
+
+    public function addOrder(Orders $order): self
+    {
+        if (!$this->orders->contains($order)) {
+            $this->orders->add($order);
+            $order->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrder(Orders $order): self
+    {
+        if ($this->orders->removeElement($order)) {
+            // set the owning side to null (unless already changed)
+            if ($order->getUser() === $this) {
+                $order->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Images>
+     */
+    public function getImages(): Collection
+    {
+        return $this->images;
+    }
+
+    public function addImage(Images $image): self
+    {
+        if (!$this->images->contains($image)) {
+            $this->images->add($image);
+            $image->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImage(Images $image): self
+    {
+        if ($this->images->removeElement($image)) {
+            // set the owning side to null (unless already changed)
+            if ($image->getUser() === $this) {
+                $image->setUser(null);
             }
         }
 
