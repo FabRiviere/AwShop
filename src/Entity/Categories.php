@@ -3,7 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\CategoriesRepository;
-use App\Trait\SlugTrait;
+use App\Entity\Trait\SlugTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -24,28 +24,17 @@ class Categories
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
-
-    #[ORM\Column(nullable: true)]
-    private ?int $categoryOrder = null;
-
-    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'categories')]
-    #[ORM\JoinColumn(onDelete: 'CASCADE')]
-    private ?self $parent = null;
-
-    #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]
-    private Collection $categories;
-
+    
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $image = null;
+    
     #[ORM\ManyToMany(targetEntity: Products::class, mappedBy: 'category')]
     private Collection $products;
 
-    #[ORM\OneToMany(mappedBy: 'categories', targetEntity: Images::class)]
-    private Collection $images;
 
     public function __construct()
     {
-        $this->categories = new ArrayCollection();
         $this->products = new ArrayCollection();
-        $this->images = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -77,48 +66,14 @@ class Categories
         return $this;
     }
 
-    public function getCategoryOrder(): ?int
+    public function getImage(): ?string
     {
-        return $this->categoryOrder;
+        return $this->image;
     }
 
-    public function setCategoryOrder(?int $categoryOrder): self
+    public function setImage(?string $image): self
     {
-        $this->categoryOrder = $categoryOrder;
-
-        return $this;
-    }
-
-    public function getParent(): ?self
-    {
-        return $this->parent;
-    }
-
-    public function setParent(?self $parent): self
-    {
-        $this->parent = $parent;
-
-        return $this;
-    }
-
-    public function addCategory(self $category): self
-    {
-        if (!$this->categories->contains($category)) {
-            $this->categories->add($category);
-            $category->setParent($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCategory(self $category): self
-    {
-        if ($this->categories->removeElement($category)) {
-            // set the owning side to null (unless already changed)
-            if ($category->getParent() === $this) {
-                $category->setParent(null);
-            }
-        }
+        $this->image = $image;
 
         return $this;
     }
@@ -150,33 +105,10 @@ class Categories
         return $this;
     }
 
-    /**
-     * @return Collection<int, Images>
-     */
-    public function getImages(): Collection
+
+    public function __toString()
     {
-        return $this->images;
+        return $this->name;
     }
 
-    public function addImage(Images $image): self
-    {
-        if (!$this->images->contains($image)) {
-            $this->images->add($image);
-            $image->setCategories($this);
-        }
-
-        return $this;
-    }
-
-    public function removeImage(Images $image): self
-    {
-        if ($this->images->removeElement($image)) {
-            // set the owning side to null (unless already changed)
-            if ($image->getCategories() === $this) {
-                $image->setCategories(null);
-            }
-        }
-
-        return $this;
-    }
 }

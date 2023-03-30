@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use App\Entity\Trait\CreatedAtTrait;
 use App\Repository\ProductsRepository;
-use App\Trait\SlugTrait;
+use App\Entity\Trait\SlugTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -57,15 +57,14 @@ class Products
     #[ORM\OneToMany(mappedBy: 'product', targetEntity: ReviewsProduct::class)]
     private Collection $reviewsProducts;
 
-    #[ORM\OneToMany(mappedBy: 'products', targetEntity: Images::class)]
-    private Collection $images;
+    #[ORM\Column(length: 255)]
+    private ?string $image = null;
 
     public function __construct()
     {
         $this->category = new ArrayCollection();
         $this->created_at = new \DateTimeImmutable();
         $this->reviewsProducts = new ArrayCollection();
-        $this->images = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -247,33 +246,20 @@ class Products
         return $this;
     }
 
-    /**
-     * @return Collection<int, Images>
-     */
-    public function getImages(): Collection
+    public function getImage(): ?string
     {
-        return $this->images;
+        return $this->image;
     }
 
-    public function addImage(Images $image): self
+    public function setImage(string $image): self
     {
-        if (!$this->images->contains($image)) {
-            $this->images->add($image);
-            $image->setProducts($this);
-        }
+        $this->image = $image;
 
         return $this;
     }
 
-    public function removeImage(Images $image): self
+    public function __toString()
     {
-        if ($this->images->removeElement($image)) {
-            // set the owning side to null (unless already changed)
-            if ($image->getProducts() === $this) {
-                $image->setProducts(null);
-            }
-        }
-
-        return $this;
+        return $this->name;
     }
 }

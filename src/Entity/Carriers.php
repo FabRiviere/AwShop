@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Trait\CreatedAtTrait;
 use App\Repository\CarriersRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -11,6 +12,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: CarriersRepository::class)]
 class Carriers
 {
+    use CreatedAtTrait;
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -28,12 +31,13 @@ class Carriers
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updated_at = null;
 
-    #[ORM\OneToMany(mappedBy: 'carriers', targetEntity: Images::class)]
-    private Collection $images;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $logo = null;
 
     public function __construct()
     {
-        $this->images = new ArrayCollection();
+        $this->created_at = new \DateTimeImmutable();
+        $this->updated_at = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -89,33 +93,20 @@ class Carriers
         return $this;
     }
 
-    /**
-     * @return Collection<int, Images>
-     */
-    public function getImages(): Collection
+    public function getLogo(): ?string
     {
-        return $this->images;
+        return $this->logo;
     }
 
-    public function addImage(Images $image): self
+    public function setLogo(?string $logo): self
     {
-        if (!$this->images->contains($image)) {
-            $this->images->add($image);
-            $image->setCarriers($this);
-        }
+        $this->logo = $logo;
 
         return $this;
     }
 
-    public function removeImage(Images $image): self
+    public function __toString()
     {
-        if ($this->images->removeElement($image)) {
-            // set the owning side to null (unless already changed)
-            if ($image->getCarriers() === $this) {
-                $image->setCarriers(null);
-            }
-        }
-
-        return $this;
+        return $this->name;
     }
 }

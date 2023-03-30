@@ -61,8 +61,8 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Orders::class)]
     private Collection $orders;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Images::class)]
-    private Collection $images;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $avatar = null;
 
     public function __construct()
     {
@@ -71,7 +71,6 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
         $this->carts = new ArrayCollection();
         $this->reviewsProducts = new ArrayCollection();
         $this->orders = new ArrayCollection();
-        $this->images = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -324,32 +323,14 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, Images>
-     */
-    public function getImages(): Collection
+    public function getAvatar(): ?string
     {
-        return $this->images;
+        return $this->avatar;
     }
 
-    public function addImage(Images $image): self
+    public function setAvatar(?string $avatar): self
     {
-        if (!$this->images->contains($image)) {
-            $this->images->add($image);
-            $image->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeImage(Images $image): self
-    {
-        if ($this->images->removeElement($image)) {
-            // set the owning side to null (unless already changed)
-            if ($image->getUser() === $this) {
-                $image->setUser(null);
-            }
-        }
+        $this->avatar = $avatar;
 
         return $this;
     }

@@ -59,7 +59,7 @@ class RegistrationController extends AbstractController
             $mail->send(
                 'no-reply@awshop.fr',
                 $user->getEmail(),
-                'Activaton de votre compte sur le site e-commerce AwShop',
+                'Activation de votre compte sur le site e-commerce AwShop',
                 'register',
                 compact('user', 'token')
             );
@@ -104,7 +104,7 @@ class RegistrationController extends AbstractController
     }
 
     // Méthode pour renvoyer le lien d'activation si token expiré ou mail supprimé, etc.
-    #[Route('/revoiVerif', name: 'app_resend_verif')]
+    #[Route('/renvoiVerif', name: 'app_resend_verif')]
     public function resendVerif(JWTService $jwt, SendMailService $mail, UsersRepository $usersRepository): Response
     {
         $user = $this->getUser();
@@ -133,7 +133,7 @@ class RegistrationController extends AbstractController
         $mail->send(
             'no-reply@awshop.fr',
             $user->getEmail(),
-            'Activaton de votre compte sur le site e-commerce AwShop',
+            'Activation de votre compte sur le site e-commerce AwShop',
             'register',
             compact('user', 'token')
         );
