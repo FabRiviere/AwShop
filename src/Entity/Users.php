@@ -25,7 +25,7 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'json')]
     private array $roles = [];
 
     /**
@@ -88,6 +88,15 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
         $this->email = $email;
 
         return $this;
+    }
+
+    /**
+     * Récupération du nom et prénom de l'utilisateur
+     * @return string|null
+     */
+    public function getFullName(): ?string
+    {
+        return $this->firstname.' '.$this->lastname;
     }
 
     /**
